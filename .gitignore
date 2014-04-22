@@ -1,0 +1,3 @@
+*.o
+server
+.fuse_hidden*
