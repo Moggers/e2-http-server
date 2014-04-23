@@ -50,8 +50,13 @@ void * client_thread( void * arg0 )
 		char * tmp = strtok( mesg, " " ); 
 		char * callback_message = (strtok( NULL, " " ) + sizeof(char));
 		char * respond_message = respond_callback( callback_message );
-		send(((client_args *)arg0)->socketfd, "HTTP/1.1 200 OK\n\n", 17, 0);
-		send(((client_args *)arg0)->socketfd, respond_message, strlen( respond_message ) * sizeof(char), 0);
+		char * respond_status = "HTTP/1.1 200 OK\n";
+		char * respond_header = "Content-Type: text/html\n\n";
+		char * mesg = calloc( 2048, sizeof( char ) );
+		mesg = strncpy( mesg, respond_status , strlen( respond_status ) * sizeof( char ) );
+		mesg = strncat( mesg, respond_header, strlen( respond_header ) * sizeof( char ) );
+		mesg = strncat( mesg, respond_message, strlen( respond_message ) * sizeof( char ) );
+		send(((client_args *)arg0)->socketfd, mesg, strlen( mesg ) * sizeof(char), 0);
 		debug_printf( "Received message: %s\nResponded with message: %s\n", callback_message, respond_message );
 		close( ((client_args *)arg0)->socketfd );
 		client_remove( ((client_args *)arg0)->socketfd );
